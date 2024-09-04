@@ -4,6 +4,9 @@ Django==5.1
 # Test
 pytest==8.3.2
 
+# Decouple
+python-decouple==3.8
+
 # ERD
 django-extensions==3.2.3
 pydotplus==2.0.2
