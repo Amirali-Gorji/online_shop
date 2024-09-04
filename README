@@ -1,5 +1,9 @@
 # Online Shop
 
+## Project Description
+    Django rest backend for online shop
+    register and login to it, then you can search for verity of products, purchase them and add your review
+
 ### Built With
 * [Django](https://www.djangoproject.com/) - Base Web Framework
 * [Django REST framework (DRF)](https://www.django-rest-framework.org/) - for Building Web APIs
