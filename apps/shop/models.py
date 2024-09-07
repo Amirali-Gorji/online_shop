@@ -16,20 +16,20 @@ class city(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
 
-class Product(models.Model):
-    name = models.CharField(max_length=100)
-    city = models.ForeignKey(city, on_delete=models.PROTECT)
-    category = models.ManyToManyField(Category)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-
 class Address(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     city = models.ForeignKey(city, on_delete=models.CASCADE)
     main_avenue = models.CharField(max_length=100)
     street = models.CharField(max_length=100)
     other_desc = models.CharField(max_length=100)
+
+
+class Product(models.Model):
+    name = models.CharField(max_length=100)
+    city = models.ForeignKey(city, on_delete=models.PROTECT)
+    category = models.ManyToManyField(Category)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
 
 class Cart(models.Model):
@@ -43,7 +43,8 @@ class Cart(models.Model):
 
 class CartItem(models.Model):
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
-    product = models.ManyToManyField(Product)
+    product = models.OneToOneField(Product, on_delete=models.CASCADE)
+    count = models.IntegerField()
     price = models.CharField(max_length=100, default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
