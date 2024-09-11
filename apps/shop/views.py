@@ -1,9 +1,25 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+
+from apps.shop.services import ProductService, CategoryService, ViewPointService, AddressService
+from apps.shop.selectors import (
+    ProductSelector, 
+    CategorySelector, 
+    ViewPointSelector, 
+    AddressSelector
+)
 from apps.shop.serializers import (
     AddProductToCartSerializer,
+    ViewpointSerializer,
+    CartItemSerializer,
+    ProductSerializer,
+    ListProductSerializer,
+    CategorySerializer,
+    AddressSerializer
 )
+from apps.shop.models import Product
+from apps.utils.paginations import CustomPagination
 class CreateProductAPI(APIView):
     authentication_classes = []
     permission_classes = []
@@ -21,3 +37,40 @@ class CreateProductAPI(APIView):
             serializer = ProductSerializer(product)
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+class CreateViewPointAPI(APIView):
+    authentication_classes = []
+    permission_classes = []
+    required_permissions = {'post':'can_add_viewpoint'}
+
+    def post(self, request, product_id):
+        serializer = ViewpointSerializer(data=request.data)
+        if serializer.is_valid():
+            score = serializer.validated_data.get('score')
+            content_text = serializer.validated_data.get('content_text')
+            viewpoint = ViewPointService.add_viewpoint(request.user.id, product_id=product_id,
+                        score=score, content_text=content_text)
+            serializer = ViewpointSerializer(viewpoint)
+            return Response(serializer.data)
+    
+
+class DeleteViewPointAPI(APIView):
+    authentication_classes = []
+    permission_classes = []
+    required_permissions = {'delete':'can_delete_viewpoint'}
+
+    def delete(self, viewpoint_id=None):
+        viewpoint = ViewPointSelector.get_viewpoint(viewpoint_id=viewpoint_id)
+        if not viewpoint:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        ViewPointService.delete_viewpoint(viewpoint=viewpoint)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class ListViewPointAPI(APIView, CustomPagination):
+    def get(self, request, product_id=None):
+        viewpoints = ViewPointSelector.get_product_viewpoints(product_id=product_id)
+        page = self.paginate_queryset(viewpoints, request)
+        serializer = ViewpointSerializer(page, many=True)
+        return self.get_paginated_response(serializer.data)
