@@ -56,6 +56,34 @@ class CreateProductAPI(APIView):
             serializer = ProductSerializer(product)
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ListAddressAPI(APIView, CustomPagination):
+    authentication_classes = []
+    permission_classes = []
+    required_permissions = {'get':'can_get_address'}
+    
+    def get(self, request):
+        addresses = AddressSelector.get_categories()
+        page = self.paginate_queryset(addresses, request)
+        serializer = AddressSerializer(page, many=True)
+        return self.get_paginated_response(serializer.data)
+
+
+class CreateAddressAPI(APIView):
+    authentication_classes = []
+    permission_classes = []
+    required_permissions = {'post':'can_add_address'}
+    
+    def post(self, request):
+        serializer = AddressSerializer(data=request.data)
+        
+        if serializer.is_valid():
+            name = serializer.validated_data.get('name')
+            address = AddressService.create_category(name=name)
+            serializer = AddressSerializer(address)
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 
 class CreateViewPointAPI(APIView):
