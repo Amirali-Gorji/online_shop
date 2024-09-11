@@ -7,6 +7,7 @@ from apps.shop.models import (
     Category
 )
 
+
 class ProductService:
     @staticmethod
     def create_product(*, name, city, category, price):
@@ -44,6 +45,51 @@ class ProductService:
         if update_product:
             product.save()
         return product
+
+
+class CardService:
+    @staticmethod
+    def add_product_to_cart(*, user_id=None, product_id=None):
+        cart_item = CartItem.objects.filter(cart=cart, product=product)
+        if not cart_item:
+            cart_item = CartItem.objects.create(cart=cart, product=product)
+            
+        cart = Cart.objects.get(user_id=user_id)
+        product = Product.objects.get(product_id=product_id)
+        
+        if cart.total_count <= 9:
+            cart_item.items_count += 1
+            cart_item.items_price += product.price
+            cart.total_count += 1
+            cart.total_price += product.price
+            cart_item.save()
+            cart.save()
+        else:
+            return None, "Cart is full"
+
+            
+    @staticmethod
+    def update_product_cart(*, user_id=None, product_id=None):
+        cart_item = CartItem.objects.filter(cart=cart, product=product)
+        if not cart_item:
+            return None, "CartItem with this product_id doesn't exist"
+
+        cart = Cart.objects.get(user_id=user_id)
+        product = Product.objects.get(product_id=product_id)
+
+        cart_item = cart_item.first()
+
+        if cart_item.items_count >= 2:
+            cart_item.items_count -= 1
+            cart_item.items_price -= product.price
+            cart.total_count -= 1
+            cart.total_price -= product.price
+            cart_item.save()
+            cart.save()
+        else:
+            return None, "CartItem with this product_id doesn't exist"
+
+
 class CategoryService:
     @staticmethod
     def create_category(*, name):
@@ -65,6 +111,8 @@ class AddressService:
         address = Address(**insert_dict)
         address.save()
         return address
+    
+
 class ViewPointService:
     @staticmethod
     def add_viewpoint(*, user_id, product_id, score, content_text=None):
