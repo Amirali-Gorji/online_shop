@@ -48,10 +48,10 @@ class CreateProductAPI(APIView):
         serializer = ProductSerializer(data=request.data)
         
         if serializer.is_valid():
-            name = serializer['name']
-            city = serializer['city']
-            category = serializer['category']
-            price = serializer['price']
+            name = serializer.validated_data.get('name')
+            city = serializer.validated_data.get('city')
+            category = serializer.validated_data.get('category')
+            price = serializer.validated_data.get('price')
             product = ProductService.create_product(name=name, city=city, category=category, price=price)
             serializer = ProductSerializer(product)
             return Response(serializer.data)
