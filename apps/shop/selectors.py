@@ -7,7 +7,10 @@ from apps.shop.models import CustomUser, CartItem, Product, Category, ViewPoint,
 class ProductSelector:
     @staticmethod
     def get_product(*, product_id=None):
-        product = Product.objects.get(id=product_id)
+        try:
+            product = Product.objects.get(id=product_id)
+        except Product.DoesNotExist:
+            return None
         return product
 
     @staticmethod
@@ -32,7 +35,10 @@ class ProductSelector:
 class CategorySelector:
     @staticmethod
     def get_categories():
-        categories = Category.objects.filter()
+        try:
+            categories = Category.objects.filter()
+        except Category.DoesNotExist:
+            return None
         return categories
 
 
@@ -49,7 +55,10 @@ class AddressSelector:
 class ViewPointSelector:
     @staticmethod
     def get_viewpoint(*, viewpoint_id=None):
-        viewpoint = ViewPoint.objects.get(id=viewpoint_id)
+        try:
+            viewpoint = ViewPoint.objects.get(id=viewpoint_id)
+        except ViewPoint.DoesNotExist:
+            return None
         return viewpoint
     
     @staticmethod
