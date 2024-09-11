@@ -20,6 +20,25 @@ from apps.shop.serializers import (
 )
 from apps.shop.models import Product
 from apps.utils.paginations import CustomPagination
+
+
+class ListProductAPI(APIView, CustomPagination):
+    # TODO: add city and name filter
+    def get(self, request):
+        serializer = ListProductSerializer(data=request.query_params)
+        if serializer.is_valid(): 
+            name = serializer.validated_data.get('name')
+            city = serializer.validated_data.get('city')
+            category = serializer.validated_data.get('category')
+            price_lte = serializer.validated_data.get('price_lte')
+            price_gte = serializer.validated_data.get('price_gte')
+            products = ProductSelector.get_products(name=name, city=city, category=category,
+                                                    price_gte=price_gte, price_lte=price_lte)
+            page = self.paginate_queryset(products, request)
+            serializer = ProductSerializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        
 class CreateProductAPI(APIView):
     authentication_classes = []
     permission_classes = []
