@@ -58,6 +58,35 @@ class CreateProductAPI(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+    
+class CreateCategoryAPI(APIView):
+    authentication_classes = []
+    permission_classes = []
+    required_permissions = {'post':'can_add_category'}
+    
+    def post(self, request):
+        serializer = CategorySerializer(data=request.data)
+        
+        if serializer.is_valid():
+            name = serializer.validated_data.get('name')
+            category = CategoryService.create_category(name=name)
+            serializer = CategorySerializer(category)
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+class ListCategoryAPI(APIView, CustomPagination):
+    authentication_classes = []
+    permission_classes = []
+    required_permissions = {'get':'can_get_category'}
+    
+    def get(self, request):
+        categories = CategorySelector.get_categories()
+        page = self.paginate_queryset(categories, request)
+        serializer = CategorySerializer(page, many=True)
+        return self.get_paginated_response(serializer.data)
+
+
 class ListAddressAPI(APIView, CustomPagination):
     authentication_classes = []
     permission_classes = []
