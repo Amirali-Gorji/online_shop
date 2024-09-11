@@ -44,6 +44,27 @@ class ProductService:
         if update_product:
             product.save()
         return product
+class CategoryService:
+    @staticmethod
+    def create_category(*, name):
+        category = Category.objects.create(name=name)
+        return category
+
+
+class AddressService:
+    @staticmethod
+    def create_category(*, user=None, city=None, main_avenue=None, street=None, other_desc=None):
+        insert_dict = {
+            'user': user,
+            'city': city,
+            'main_avenue': main_avenue,
+            'street': street
+        }
+        if other_desc:
+            insert_dict['other_desc'] = other_desc
+        address = Address(**insert_dict)
+        address.save()
+        return address
 class ViewPointService:
     @staticmethod
     def add_viewpoint(*, user_id, product_id, score, content_text=None):
@@ -54,3 +75,4 @@ class ViewPointService:
     @staticmethod
     def delete_viewpoint(*, viewpoint=None):
         viewpoint.delete()
+
