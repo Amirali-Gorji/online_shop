@@ -7,6 +7,9 @@ psycopg2==2.9.9
 # Test
 pytest==8.3.2
 
+# Shell
+ipython==8.27.0
+
 # Decouple
 python-decouple==3.8
 
