@@ -58,6 +58,39 @@ class CreateProductAPI(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+class DeleteProductAPI(APIView):
+    authentication_classes = []
+    permission_classes = []
+    required_permissions = {'delete':'can_delete_product'}
+
+    def delete(self, product_id=None):
+        product = ProductSelector.get_product(product_id==product_id)
+        if not product:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        ProductService.delete_product(product=product)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class UpdateProductAPI(APIView):
+    authentication_classes = []
+    permission_classes = []
+    required_permissions = {'post':'can_update_product'}
+
+    def put(self, request, product_id=None):
+        product = ProductSelector.get_product(product_id=product_id)
+        if not product:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        serializer = ProductSerializer(data=request.data, partial=True)
+        if serializer.is_valid():
+            name = serializer.validated_data.get('name')
+            city = serializer.validated_data.get('city')
+            category = serializer.validated_data.get('category')
+            price = serializer.validated_data.get('price')
+            product = ProductService.update_product(product=product, name=name, city=city, category=category, price=price)
+            serializer = ProductSerializer(product)
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
     
 class CreateCategoryAPI(APIView):
     authentication_classes = []
