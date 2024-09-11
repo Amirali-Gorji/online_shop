@@ -26,9 +26,9 @@ class Address(models.Model):
 
 class Product(models.Model):
     name = models.CharField(max_length=100)
-    city = models.ForeignKey(City, on_delete=models.PROTECT)
+    city = models.ManyToManyField(City)
     category = models.ManyToManyField(Category)
-    price = models.CharField(max_length=100, default=0)
+    price = models.CharField(max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -39,7 +39,7 @@ class Cart(models.Model):
     is_active = models.BooleanField(default=True)
     address = models.ForeignKey(Address, on_delete=models.PROTECT, null=True)
     is_reminded = models.BooleanField(default=False)
-    total_count = models.IntegerField()
+    total_count = models.IntegerField(default=0)
     total_price = models.CharField(max_length=100, default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -48,7 +48,7 @@ class Cart(models.Model):
 class CartItem(models.Model):
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
     product = models.OneToOneField(Product, on_delete=models.CASCADE)
-    items_count = models.IntegerField()
+    items_count = models.IntegerField(default=0)
     items_price = models.CharField(max_length=100, default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
