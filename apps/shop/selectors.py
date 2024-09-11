@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from apps.shop.models import CustomUser, CartItem, Product, Category, ViewPoint
+from apps.shop.models import CustomUser, CartItem, Product, Category, ViewPoint, Address
 
 
 
@@ -34,6 +34,16 @@ class CategorySelector:
     def get_categories():
         categories = Category.objects.filter()
         return categories
+
+
+class AddressSelector:
+    @staticmethod
+    def get_categories():
+        try:
+            address = Address.objects.filter()
+        except Address.DoesNotExist:
+            return None
+        return address
 
 
 class ViewPointSelector:
