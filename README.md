@@ -1,8 +1,8 @@
 # Online Shop
 
 ## Project Description
-    Django rest backend for online shop
-    register and login to it, then you can search for verity of products, purchase them and add your review
+Django rest backend for online shop\
+register and login to it, then you can search for variety of products, purchase them and add your review
 
 ### Built With
 * [Django](https://www.djangoproject.com/) - Base Web Framework
