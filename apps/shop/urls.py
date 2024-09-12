@@ -20,7 +20,7 @@ from apps.shop.views import (
 urlpatterns = [
     path('products/', ListProductAPI.as_view(), name='list-products'),
     path('products/create/', CreateProductAPI.as_view(), name='create-product'),
-    path('products/update/', UpdateProductAPI.as_view(), name='update-products'),
+    path('products/<int:product_id>/update/', UpdateProductAPI.as_view(), name='update-products'),
     path('products/<int:product_id>/delete/', DeleteProductAPI.as_view(), name='delete-product'),
     path('products/<int:product_id>/viewpoints/', ListViewPointAPI.as_view(), name='list-product-viewpoints'),
     path('products/<int:product_id>/viewpoints/create/', CreateViewPointAPI.as_view(), name='create-product-viewpoint'),
