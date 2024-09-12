@@ -1,10 +1,6 @@
 from apps.shop.models import ( 
-    Cart,
-    CartItem,
-    Product,
-    ViewPoint, 
-    Address,
-    Category
+    Cart, CartItem, Product,
+    ViewPoint, Address, Category
 )
 
 
@@ -47,12 +43,20 @@ class ProductService:
         return product
 
 
-class CardService:
+class CartItemService:
+    @staticmethod
+    def create_cart_item(* , cart=None, product=None, items_count=0, items_price=0):
+        cart_item = CartItem.objects.create(cart=cart, product=product, 
+                                items_count=items_count, items_price=items_price)
+        return cart_item
+
+
+class CartService:
     @staticmethod
     def add_product_to_cart(*, user_id=None, product_id=None):
-        cart_item = CartItem.objects.filter(cart=cart, product=product)
+        cart_item = CartItem.objects.filter(cart=cart, product=product_id)
         if not cart_item:
-            cart_item = CartItem.objects.create(cart=cart, product=product)
+            cart_item = CartItemService.create_cart_item(cart=cart, product=product)
             
         cart = Cart.objects.get(user_id=user_id)
         product = Product.objects.get(product_id=product_id)
@@ -66,28 +70,44 @@ class CardService:
             cart.save()
         else:
             return None, "Cart is full"
-
-            
+        
+        return cart, "OK"
+ 
     @staticmethod
-    def update_product_cart(*, user_id=None, product_id=None):
-        cart_item = CartItem.objects.filter(cart=cart, product=product)
+    def update_product_in_cart(*, user_id=None, product_id=None, quantity=0):
+        # Check if this product exist in cart
+        cart = Cart.objects.get(user_id=user_id)
+        cart_item = CartItem.objects.filter(cart=cart, product=product_id)
         if not cart_item:
             return None, "CartItem with this product_id doesn't exist"
 
-        cart = Cart.objects.get(user_id=user_id)
         product = Product.objects.get(product_id=product_id)
-
         cart_item = cart_item.first()
 
-        if cart_item.items_count >= 2:
-            cart_item.items_count -= 1
-            cart_item.items_price -= product.price
-            cart.total_count -= 1
-            cart.total_price -= product.price
+        if cart.total_count - quantity >= 1 and cart_item.items_count - quantity >= 1:
+            cart_item.items_count -= quantity
+            cart_item.items_price -= quantity * product.price
+            cart.total_count -= quantity
+            cart.total_price -= quantity * product.price
             cart_item.save()
             cart.save()
         else:
+            return None, "Can't subtract this number of items"
+        return cart, "OK"
+    
+    @staticmethod
+    def remove_product_from_cart(*, user_id=None, product_id=None):
+        # Check if this product exist in cart
+        cart = Cart.objects.get(user_id=user_id)
+        cart_item = CartItem.objects.filter(cart=cart, product=product_id)
+        if not cart_item:
             return None, "CartItem with this product_id doesn't exist"
+
+        cart_item = cart_item.first()
+
+        cart_item.delete()
+
+        return cart, "OK"
 
 
 class CategoryService:
@@ -99,7 +119,7 @@ class CategoryService:
 
 class AddressService:
     @staticmethod
-    def create_category(*, user=None, city=None, main_avenue=None, street=None, other_desc=None):
+    def create_address(*, user=None, city=None, main_avenue=None, street=None, other_desc=None):
         insert_dict = {
             'user': user,
             'city': city,
