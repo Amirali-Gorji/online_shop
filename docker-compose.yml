@@ -14,5 +14,8 @@ services:
 
 
   web:
+    container_name: online_shop
     build: .
+    ports:
+      - "8000:8000"
     command: bash -c 'python manage.py migrate && python manage.py runserver 0.0.0.0:8000'
