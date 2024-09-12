@@ -40,6 +40,24 @@ class AddProductToCartAPI(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
        
 
+class UpdateCartProductAPI(APIView):
+    authentication_classes = []
+    permission_classes = []
+    required_permissions = {'put':'can_update_cart'}
+
+    def put(self, request):
+        serializer = UpdateProductInCartSerializer(data=request.data)
+        if serializer.is_valid():
+            product_id = serializer.validated_data.get('product_id')
+            quantity = serializer.validated_data.get('quantity')
+            cart, msg = CartService.update_product_in_cart(user_id=request.user.id,
+                                                         product_id=product_id, quantity=quantity)
+            if not cart:
+                return Response(data=msg, status=status.HTTP_400_BAD_REQUEST)
+            output_serializer = CartSerializer(cart)
+            return Response(output_serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
+    
 
 class ListProductAPI(APIView, CustomPagination):
     # TODO: add city and name filter
