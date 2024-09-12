@@ -58,11 +58,24 @@ class UpdateCartProductAPI(APIView):
             return Response(output_serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
     
+class RemoveProductFromCart(APIView):
+    authentication_classes = []
+    permission_classes = []
+    required_permissions = {'delete':'can_delete_product_from_cart'}
+
+    def delete(self, request):
+        serializer = AddRemoveProductCartSerializer(data=request.data)
+        if serializer.is_valid():
+            product_id = serializer.validated_data.get('product_id')
+            cart, msg = CartService.remove_product_from_cart(product_id=product_id)
+            if not cart:
+                return Response(data=msg, status=status.HTTP_400_BAD_REQUEST)
+            return Response(status=status.HTTP_204_NO_CONTENT)
+
 
 class ListProductAPI(APIView, CustomPagination):
-    # TODO: add city and name filter
     def get(self, request):
-        serializer = ListProductSerializer(data=request.query_params)
+        serializer = ListProductSerializer(data=request.query_params, partial=True)
         if serializer.is_valid(): 
             name = serializer.validated_data.get('name')
             city = serializer.validated_data.get('city')
@@ -72,8 +85,8 @@ class ListProductAPI(APIView, CustomPagination):
             products = ProductSelector.get_products(name=name, city=city, category=category,
                                                     price_gte=price_gte, price_lte=price_lte)
             page = self.paginate_queryset(products, request)
-            serializer = ProductSerializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
+            output_serializer = ProductSerializer(page, many=True)
+            return self.get_paginated_response(output_serializer.data)
 
         
 class CreateProductAPI(APIView):
@@ -178,8 +191,13 @@ class CreateAddressAPI(APIView):
         serializer = AddressSerializer(data=request.data)
         
         if serializer.is_valid():
-            name = serializer.validated_data.get('name')
-            address = AddressService.create_category(name=name)
+            user = serializer.validated_data.get('user')
+            city = serializer.validated_data.get('city')
+            main_avenue = serializer.validated_data.get('main_avenue')
+            street = serializer.validated_data.get('street')
+            other_desc = serializer.validated_data.get('other_desc')
+            address = AddressService.create_address(user=user, city=city, main_avenue=main_avenue, 
+                                                    street=street, other_desc=other_desc)
             serializer = AddressSerializer(address)
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
