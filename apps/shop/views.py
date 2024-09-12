@@ -2,7 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
-from apps.shop.services import ProductService, CategoryService, ViewPointService, AddressService
+from apps.shop.services import ProductService, CategoryService, ViewPointService, AddressService, CartService
 from apps.shop.selectors import (
     ProductSelector, 
     CategorySelector, 
@@ -10,9 +10,10 @@ from apps.shop.selectors import (
     AddressSelector
 )
 from apps.shop.serializers import (
-    AddProductToCartSerializer,
+    AddRemoveProductCartSerializer,
+    UpdateProductInCartSerializer,
     ViewpointSerializer,
-    CartItemSerializer,
+    CartSerializer,
     ProductSerializer,
     ListProductSerializer,
     CategorySerializer,
@@ -20,6 +21,24 @@ from apps.shop.serializers import (
 )
 from apps.shop.models import Product
 from apps.utils.paginations import CustomPagination
+
+
+class AddProductToCartAPI(APIView):
+    authentication_classes = []
+    permission_classes = []
+    required_permissions = {'post':'can_add_product_to_cart'}
+
+    def post(self, request):
+        serializer = AddRemoveProductCartSerializer(data=request.data)
+        if serializer.is_valid():
+            product_id = serializer.validated_data.get('product_id')
+            cart, msg = CartService.add_product_to_cart(user_id=request.user.id, product_id=product_id)
+            if not cart:
+                return Response(data=msg, status=status.HTTP_400_BAD_REQUEST)
+            output_serializer = CartSerializer(cart)
+            return Response(output_serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+       
 
 
 class ListProductAPI(APIView, CustomPagination):
