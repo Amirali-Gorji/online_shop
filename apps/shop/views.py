@@ -2,11 +2,17 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
-from apps.shop.services import ProductService, CategoryService, ViewPointService, AddressService, CartService
+from apps.shop.services import (
+    ProductService, 
+    CategoryService, 
+    ViewPointService, 
+    AddressService, 
+    CartService
+)
 from apps.shop.selectors import (
-    ProductSelector, 
-    CategorySelector, 
-    ViewPointSelector, 
+    ProductSelector,
+    CategorySelector,
+    ViewPointSelector,
     AddressSelector
 )
 from apps.shop.serializers import (
@@ -19,7 +25,6 @@ from apps.shop.serializers import (
     CategorySerializer,
     AddressSerializer
 )
-from apps.shop.models import Product
 from apps.utils.paginations import CustomPagination
 
 
@@ -32,13 +37,14 @@ class AddProductToCartAPI(APIView):
         serializer = AddRemoveProductCartSerializer(data=request.data)
         if serializer.is_valid():
             product_id = serializer.validated_data.get('product_id')
-            cart, msg = CartService.add_product_to_cart(user_id=request.user.id, product_id=product_id)
+            cart, msg = CartService.add_product_to_cart(user_id=request.user.id, 
+                                                        product_id=product_id)
             if not cart:
                 return Response(data=msg, status=status.HTTP_400_BAD_REQUEST)
             output_serializer = CartSerializer(cart)
             return Response(output_serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-       
+     
 
 class UpdateCartProductAPI(APIView):
     authentication_classes = []
@@ -57,7 +63,8 @@ class UpdateCartProductAPI(APIView):
             output_serializer = CartSerializer(cart)
             return Response(output_serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
-    
+   
+ 
 class RemoveProductFromCart(APIView):
     authentication_classes = []
     permission_classes = []
@@ -114,7 +121,7 @@ class DeleteProductAPI(APIView):
     required_permissions = {'delete':'can_delete_product'}
 
     def delete(self, product_id=None):
-        product = ProductSelector.get_product(product_id==product_id)
+        product = ProductSelector.get_product(product_id=product_id)
         if not product:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         ProductService.delete_product(product=product)
@@ -213,7 +220,7 @@ class CreateViewPointAPI(APIView):
         if serializer.is_valid():
             score = serializer.validated_data.get('score')
             content_text = serializer.validated_data.get('content_text')
-            viewpoint = ViewPointService.add_viewpoint(request.user.id, product_id=product_id,
+            viewpoint = ViewPointService.add_viewpoint(user_id=request.user.id, product_id=product_id,
                         score=score, content_text=content_text)
             serializer = ViewpointSerializer(viewpoint)
             return Response(serializer.data)

@@ -9,7 +9,7 @@ class ProductService:
     def create_product(*, name, city, category, price):
         product = Product.objects.create(name=name, price=price)
         if product:
-            product.category.add(*category)   
+            product.category.add(*category)
             product.city.add(*city)
         return product
 
@@ -46,7 +46,7 @@ class ProductService:
 class CartItemService:
     @staticmethod
     def create_cart_item(* , cart=None, product=None, items_count=0, items_price=0):
-        cart_item = CartItem.objects.create(cart=cart, product=product, 
+        cart_item = CartItem.objects.create(cart=cart, product=product,
                                 items_count=items_count, items_price=items_price)
         return cart_item
 
@@ -54,12 +54,16 @@ class CartItemService:
 class CartService:
     @staticmethod
     def add_product_to_cart(*, user_id=None, product_id=None):
+        cart = Cart.objects.get(user_id=user_id)
+        try: 
+            product = Product.objects.get(product_id=product_id)
+        except Product.DoesNotExist:
+            return None, "product_id doesn't exist"
+        
         cart_item = CartItem.objects.filter(cart=cart, product=product_id)
         if not cart_item:
             cart_item = CartItemService.create_cart_item(cart=cart, product=product)
             
-        cart = Cart.objects.get(user_id=user_id)
-        product = Product.objects.get(product_id=product_id)
         
         if cart.total_count <= 9:
             cart_item.items_count += 1

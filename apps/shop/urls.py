@@ -3,7 +3,7 @@ from django.urls import path
 from apps.shop.views import (
     CreateViewPointAPI, DeleteViewPointAPI, ListViewPointAPI,
     CreateProductAPI, DeleteProductAPI, AddProductToCartAPI,
-    UpdateCartProductAPI, CreateCategoryAPI, ListProductAPI, 
+    UpdateCartProductAPI, CreateCategoryAPI, ListProductAPI,
     ListCategoryAPI, UpdateProductAPI, ListAddressAPI,
     CreateAddressAPI, RemoveProductFromCart
 )
