@@ -1,0 +1,21 @@
+version: '3.1'
+
+
+services:
+  postgres:
+    image: postgres:15.3-alpine
+    ports:
+      - '5432:5432'
+    volumes:
+      - '/var/www/online_shop/data/postgres/:/var/lib/postgresql/data'
+    restart: unless-stopped
+    env_file:
+      - 'env'
+
+
+  web:
+    container_name: online_shop
+    build: .
+    ports:
+      - "8000:8000"
+    command: bash -c 'python manage.py migrate && python manage.py runserver 0.0.0.0:8000'
