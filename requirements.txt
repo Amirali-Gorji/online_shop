@@ -10,6 +10,10 @@ pytest==8.3.2
 # Shell
 ipython==8.27.0
 
+# Formatting
+pep8==1.7.1
+pylint==3.2.7
+
 # Decouple
 python-decouple==3.8
 

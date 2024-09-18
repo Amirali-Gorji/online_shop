@@ -1,7 +1,7 @@
 from django.urls import path
 
 from apps.shop.views import (
-    CreateViewPointAPI, DeleteViewPointAPI, ListViewPointAPI,
+    CreateViewPointAPI, ListViewPointAPI,
     CreateProductAPI, DeleteProductAPI, AddProductToCartAPI,
     UpdateCartProductAPI, CreateCategoryAPI, ListProductAPI, 
     ListCategoryAPI, UpdateProductAPI, ListAddressAPI,
@@ -16,7 +16,7 @@ urlpatterns = [
     path('products/<int:product_id>/delete/', DeleteProductAPI.as_view(), name='delete-product'),
     path('products/<int:product_id>/viewpoints/', ListViewPointAPI.as_view(), name='list-product-viewpoints'),
     path('products/<int:product_id>/viewpoints/create/', CreateViewPointAPI.as_view(), name='create-product-viewpoint'),
-    path('products/<int:product_id>/viewpoints/<int:viewpoint_id>/delete/', DeleteViewPointAPI.as_view(), name='delete-viewpoint'),
+    # path('products/<int:product_id>/viewpoints/<int:viewpoint_id>/delete/', DeleteViewPointAPI.as_view(), name='delete-viewpoint'),
     path('cart/add/', AddProductToCartAPI.as_view(), name='add-product-to-cart'),
     path('cart/update/', UpdateCartProductAPI.as_view(), name='update-product-in-cart'),
     path('cart/remove/', RemoveProductFromCart.as_view(), name='remove-product-from-cart'),
