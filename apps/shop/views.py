@@ -111,7 +111,7 @@ class CreateProductAPI(APIView):
             price = serializer.validated_data.get('price')
             product = ProductService.create_product(name=name, city=city, category=category, price=price)
             serializer = ProductSerializer(product)
-            return Response(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -161,7 +161,7 @@ class CreateCategoryAPI(APIView):
             name = serializer.validated_data.get('name')
             category = CategoryService.create_category(name=name)
             serializer = CategorySerializer(category)
-            return Response(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 
@@ -196,7 +196,7 @@ class CreateAddressAPI(APIView):
     
     def post(self, request):
         serializer = AddressSerializer(data=request.data)
-        
+            
         if serializer.is_valid():
             user = serializer.validated_data.get('user')
             city = serializer.validated_data.get('city')
@@ -206,7 +206,7 @@ class CreateAddressAPI(APIView):
             address = AddressService.create_address(user=user, city=city, main_avenue=main_avenue, 
                                                     street=street, other_desc=other_desc)
             serializer = AddressSerializer(address)
-            return Response(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 
@@ -223,8 +223,9 @@ class CreateViewPointAPI(APIView):
             viewpoint = ViewPointService.add_viewpoint(user_id=request.user.id, product_id=product_id,
                         score=score, content_text=content_text)
             serializer = ViewpointSerializer(viewpoint)
-            return Response(serializer.data)
-    
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class DeleteViewPointAPI(APIView):
     authentication_classes = []
